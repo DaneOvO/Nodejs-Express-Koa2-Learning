@@ -6,11 +6,17 @@ const handleUserRouter = (req, res) => {
   // 登录
   if (method === "POST" && req.path === "/api/user/login") {
     const result = loginCheck(req.body);
-    if (result) {
-      return new SuccessModel();
-    } else {
+    return result.then((data) => {
+      if (data.username) {
+        return new SuccessModel();
+      }
       return new ErrorModel("登录失败");
-    }
+    });
+    // if (result) {
+    //   return new SuccessModel();
+    // } else {
+    //   return new ErrorModel("登录失败");
+    // }
   }
 };
 module.exports = handleUserRouter;
