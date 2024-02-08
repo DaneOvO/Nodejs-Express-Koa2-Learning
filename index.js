@@ -1,26 +1,22 @@
-const mysql = require("mysql");
+const redis = require("redis");
 
-// 创建链接
-const con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "123456",
-  port: 3306,
-  database: "myblog",
-});
+// !为了分割这一行和上一行，如果上一行没有;结尾
+!(async function () {
+  // 创建客户端
+  const redisClient = redis.createClient(6379, "127.0.0.1");
 
-// 开始连接
-con.connect();
-// 执行sql语句
-// const sql = "select * from users;";
-// const sql = `update users set realname = '李四2' where username = 'lisi'`;
-const sql = `INSERT INTO blogs(title,content,createtime,author) VALUES ('标题C','内容C',1700988977111,'钱五')`;
-con.query(sql, (err, result) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  console.log("result", result);
-});
-// 关闭连接
-con.end();
+  // 连接
+  await redisClient
+    .connect()
+    .then(() => console.log("redis connect sucess!"))
+    .catch(console.error);
+
+  await redisClient.set("myname", "zhangsan");
+
+  // get
+  const myname = await redisClient.get("myname");
+  console.log("myname", myname);
+
+  // 退出
+  redisClient.quit();
+})();
